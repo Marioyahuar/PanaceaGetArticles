@@ -14,7 +14,7 @@ let articles = [];
 async function cargarCSV() {
   try {
     const response = await axios.get("https://raw.githubusercontent.com/Marioyahuar/PanaceaGetArticles/refs/heads/main/archivoFinal.csv"); 
-
+    console.log("DATA: ", response.data.length)
     // Convertir el string en un stream
     const stream = Readable.from(response.data);
 
