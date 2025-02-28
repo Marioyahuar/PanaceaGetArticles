@@ -2,16 +2,33 @@ const express = require("express");
 const fs = require("fs");
 const csv = require("csv-parser");
 const Fuse = require("fuse.js");
+const axios = require("axios");
+const { Readable } = require("stream");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Cargar datos desde el CSV
 let articles = [];
-fs.createReadStream("archivoFinal.csv")
-  .pipe(csv({ separator: ';', headers: ['Autor', 'Titulo', 'Archivo', 'Volumen', 'Seccion', 'URL', 'Ano'] }))
-  .on("data", (row) => articles.push(row))
-  .on("end", () => console.log("CSV cargado correctamente"));
+
+async function cargarCSV() {
+  try {
+    const response = await axios.get("https://raw.githubusercontent.com/Marioyahuar/PanaceaGetArticles/refs/heads/main/archivoFinal.csv"); 
+
+    // Convertir el string en un stream
+    const stream = Readable.from(response.data);
+
+    stream
+      .pipe(csv({ separator: ';', headers: ['Autor', 'Titulo', 'Archivo', 'Volumen', 'Seccion', 'URL', 'Ano'] }))
+      .on("data", (row) => articles.push(row))
+      .on("end", () => console.log("CSV cargado correctamente"));
+      
+  } catch (error) {
+    console.error("Error cargando el CSV:", error);
+  }
+}
+
+cargarCSV();
 
 // Configuración de Fuse.js para búsqueda flexible
 const fuseOptions = {
