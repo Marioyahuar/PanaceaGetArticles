@@ -4,7 +4,7 @@ const csv = require("csv-parser");
 const Fuse = require("fuse.js");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Cargar datos desde el CSV
 let articles = [];
